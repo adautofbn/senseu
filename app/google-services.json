@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "89847813441",
+    "firebase_url": "https://senseu-a4e8c.firebaseio.com",
+    "project_id": "senseu-a4e8c",
+    "storage_bucket": "senseu-a4e8c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89847813441:android:e07206a49ea63c2e7b3dc0",
+        "android_client_info": {
+          "package_name": "br.edu.ufcg.pc.senseu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "89847813441-c6b4dd5j6fs562mbnvs0sn0e4cevnmit.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.edu.ufcg.pc.senseu",
+            "certificate_hash": "66cd0fdc2d7e86b3d82b7dea1859d3036bfdc64c"
+          }
+        },
+        {
+          "client_id": "89847813441-cml8q9h1ctb98132dokn3pmnlj3nleo7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8PB8HoplLKazrBgCVZ59iHukjNm9Vbzw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "89847813441-cml8q9h1ctb98132dokn3pmnlj3nleo7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

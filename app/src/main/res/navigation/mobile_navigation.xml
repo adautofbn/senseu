@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_facedetection">
+
+    <fragment
+        android:id="@+id/navigation_facedetection"
+        android:name="br.edu.ufcg.pc.senseu.ui.facedetection.FaceDetectionFragment"
+        android:label="@string/title_facedetection"
+        tools:layout="@layout/fragment_facedetection" />
+
+    <fragment
+        android:id="@+id/navigation_tensorflow"
+        android:name="br.edu.ufcg.pc.senseu.ui.tensorflow.TensorflowFragment"
+        android:label="@string/title_tensorflow"
+        tools:layout="@layout/fragment_tensorflow" />
+
+    <fragment
+        android:id="@+id/navigation_results"
+        android:name="br.edu.ufcg.pc.senseu.ui.results.ResultsFragment"
+        android:label="@string/title_results"
+        tools:layout="@layout/fragment_results" />
+</navigation>

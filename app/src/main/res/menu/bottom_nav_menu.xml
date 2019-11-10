@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_facedetection"
+        android:icon="@drawable/ic_facedetection"
+        android:title="@string/title_facedetection" />
+
+    <item
+        android:id="@+id/navigation_tensorflow"
+        android:icon="@drawable/ic_tensorflow"
+        android:title="@string/title_tensorflow" />
+
+    <item
+        android:id="@+id/navigation_results"
+        android:icon="@drawable/ic_results"
+        android:title="@string/title_results" />
+
+</menu>
