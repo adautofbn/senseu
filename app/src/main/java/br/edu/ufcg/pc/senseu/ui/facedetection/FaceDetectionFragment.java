@@ -1,13 +1,14 @@
 package br.edu.ufcg.pc.senseu.ui.facedetection;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.util.Log;
-import android.util.Rational;
 import android.util.Size;
 import android.view.LayoutInflater;
 
@@ -21,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageAnalysisConfig;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.core.PreviewConfig;
 import androidx.core.app.ActivityCompat;
@@ -40,8 +40,10 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
 
+import java.io.IOException;
 import java.util.List;
 
+import br.edu.ufcg.pc.senseu.MainActivity;
 import br.edu.ufcg.pc.senseu.R;
 
 public class FaceDetectionFragment extends Fragment
@@ -51,15 +53,31 @@ public class FaceDetectionFragment extends Fragment
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
     private static final String TAG = "FaceDetectionFragment";
 
-    private View mView;
     private TextureView textureView;
+    private MainActivity mainActivity;
+    private String message;
 
+    private FirebaseVisionFaceDetectorOptions options;
+    private FirebaseVisionFaceDetector detector;
+
+    private MLTextTask textTask;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        mView = inflater.inflate(R.layout.fragment_facedetection, container, false);
+        View mView = inflater.inflate(R.layout.fragment_facedetection, container, false);
+        mainActivity = (MainActivity) getActivity();
         textureView = mView.findViewById(R.id.textureView);
+
+        options = new FirebaseVisionFaceDetectorOptions.Builder()
+                        .setClassificationMode(FirebaseVisionFaceDetectorOptions.ACCURATE)
+                        .setLandmarkMode(FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS)
+                        .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
+                        .setMinFaceSize(0.15f)
+                        .enableTracking()
+                        .build();
+
+        detector = FirebaseVision.getInstance().getVisionFaceDetector(options);
 
         if(allPermissionsGranted()){
             startCamera(); //start camera if permission has been granted by user
@@ -68,6 +86,24 @@ public class FaceDetectionFragment extends Fragment
         }
 
         return mView;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        textTask.cancel(true);
+        try {
+            detector.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        textTask = new MLTextTask();
+        textTask.execute();
     }
 
     private void startCamera() {
@@ -144,18 +180,6 @@ public class FaceDetectionFragment extends Fragment
     private void runFaceContourDetection(Image preview, int rotation) {
         FirebaseVisionImage image = FirebaseVisionImage.fromMediaImage(preview, (int)textureView.getRotation());
 
-        FirebaseVisionFaceDetectorOptions options =
-                new FirebaseVisionFaceDetectorOptions.Builder()
-                        .setClassificationMode(FirebaseVisionFaceDetectorOptions.ACCURATE)
-                        .setLandmarkMode(FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS)
-                        .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
-                        .setMinFaceSize(0.15f)
-                        .enableTracking()
-                        .build();
-
-        FirebaseVisionFaceDetector detector = FirebaseVision.getInstance()
-                .getVisionFaceDetector(options);
-
         Task<List<FirebaseVisionFace>> result =
                 detector.detectInImage(image)
                 .addOnSuccessListener(
@@ -193,13 +217,34 @@ public class FaceDetectionFragment extends Fragment
                     face.getContour(FirebaseVisionFaceContour.UPPER_LIP_BOTTOM).getPoints();
 
             // If classification was enabled:
+            float smileProb = 0;
+            float rightEyeOpenProb = 0;
+            float leftEyeOpenProb = 0;
+
             if (face.getSmilingProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
-                float smileProb = face.getSmilingProbability();
-                showToast("Smile Probability: " + smileProb);
+                smileProb = face.getSmilingProbability();
             }
             if (face.getRightEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
-                float rightEyeOpenProb = face.getRightEyeOpenProbability();
+                rightEyeOpenProb = face.getRightEyeOpenProbability();
             }
+            if (face.getLeftEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+                leftEyeOpenProb = face.getLeftEyeOpenProbability();
+            }
+
+            String msg = "";
+            if(smileProb > 0.5) {
+                msg = "Happy: " + smileProb;
+            }
+
+            else if(smileProb < 0.5 && rightEyeOpenProb > 0.5 && leftEyeOpenProb > 0.5) {
+                msg = "Angry: " + (rightEyeOpenProb + leftEyeOpenProb + smileProb) / 3;
+            }
+
+            else if(smileProb < 0.5 && (rightEyeOpenProb < 0.5 || leftEyeOpenProb < 0.5)) {
+                msg = "Sad: " + ((1 - rightEyeOpenProb) + (1 - leftEyeOpenProb) + smileProb) / 3;
+            }
+
+            this.message = msg;
 
             // If face tracking was enabled:
             if (face.getTrackingId() != FirebaseVisionFace.INVALID_ID) {
@@ -209,7 +254,7 @@ public class FaceDetectionFragment extends Fragment
     }
 
     private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -233,5 +278,37 @@ public class FaceDetectionFragment extends Fragment
             }
         }
         return true;
+    }
+
+    class MLTextTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            while (true) {
+
+                Log.d(TAG, "ML doInBackground: " + message);
+
+                if(isCancelled()) {
+                    break;
+                }
+
+                publishProgress(message);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            mainActivity.textView.setText(values[0]);
+        }
     }
 }

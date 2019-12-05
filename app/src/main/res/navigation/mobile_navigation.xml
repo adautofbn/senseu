@@ -13,13 +13,8 @@
 
     <fragment
         android:id="@+id/navigation_tensorflow"
-        android:name="br.edu.ufcg.pc.senseu.ui.tensorflow.TensorflowFragment"
+        android:name="br.edu.ufcg.pc.senseu.ui.tensorflow.TensorFlowFragment"
         android:label="@string/title_tensorflow"
         tools:layout="@layout/fragment_tensorflow" />
 
-    <fragment
-        android:id="@+id/navigation_results"
-        android:name="br.edu.ufcg.pc.senseu.ui.results.ResultsFragment"
-        android:label="@string/title_results"
-        tools:layout="@layout/fragment_results" />
 </navigation>

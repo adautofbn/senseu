@@ -11,9 +11,4 @@
         android:icon="@drawable/ic_tensorflow"
         android:title="@string/title_tensorflow" />
 
-    <item
-        android:id="@+id/navigation_results"
-        android:icon="@drawable/ic_results"
-        android:title="@string/title_results" />
-
 </menu>
