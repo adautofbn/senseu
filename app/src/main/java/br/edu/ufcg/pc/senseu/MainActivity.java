@@ -1,6 +1,5 @@
 package br.edu.ufcg.pc.senseu;
 
-import android.Manifest;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
