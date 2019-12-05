@@ -60,7 +60,7 @@ public class FaceDetectionFragment extends Fragment
     private FirebaseVisionFaceDetectorOptions options;
     private FirebaseVisionFaceDetector detector;
 
-    private MLTextTask textTask;
+    //private MLTextTask textTask;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -91,7 +91,7 @@ public class FaceDetectionFragment extends Fragment
     @Override
     public void onStop() {
         super.onStop();
-        textTask.cancel(true);
+        //textTask.cancel(true);
         try {
             detector.close();
         } catch (IOException e) {
@@ -102,8 +102,8 @@ public class FaceDetectionFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        textTask = new MLTextTask();
-        textTask.execute();
+        //textTask = new MLTextTask();
+        //textTask.execute();
     }
 
     private void startCamera() {
@@ -180,8 +180,7 @@ public class FaceDetectionFragment extends Fragment
     private void runFaceContourDetection(Image preview, int rotation) {
         FirebaseVisionImage image = FirebaseVisionImage.fromMediaImage(preview, (int)textureView.getRotation());
 
-        Task<List<FirebaseVisionFace>> result =
-                detector.detectInImage(image)
+        detector.detectInImage(image)
                 .addOnSuccessListener(
                         new OnSuccessListener<List<FirebaseVisionFace>>() {
                             @Override
@@ -244,7 +243,9 @@ public class FaceDetectionFragment extends Fragment
                 msg = "Sad: " + ((1 - rightEyeOpenProb) + (1 - leftEyeOpenProb) + smileProb) / 3;
             }
 
-            this.message = msg;
+            //this.message = msg;
+
+            mainActivity.textView.setText(msg);
 
             // If face tracking was enabled:
             if (face.getTrackingId() != FirebaseVisionFace.INVALID_ID) {
@@ -280,35 +281,35 @@ public class FaceDetectionFragment extends Fragment
         return true;
     }
 
-    class MLTextTask extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            while (true) {
-
-                Log.d(TAG, "ML doInBackground: " + message);
-
-                if(isCancelled()) {
-                    break;
-                }
-
-                publishProgress(message);
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            mainActivity.textView.setText(values[0]);
-        }
-    }
+//    class MLTextTask extends AsyncTask<Void, String, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//
+//            while (true) {
+//
+//                Log.d(TAG, "ML doInBackground: " + message);
+//
+//                if(isCancelled()) {
+//                    break;
+//                }
+//
+//                publishProgress(message);
+//
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    Thread.currentThread().interrupt();
+//                }
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(String... values) {
+//            mainActivity.textView.setText(values[0]);
+//        }
+//    }
 }

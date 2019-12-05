@@ -68,7 +68,7 @@ public class TensorFlowFragment extends Fragment {
     private FirebaseModelInterpreter interpreter;
     private FirebaseModelInputOutputOptions inputOutputOptions;
 
-    private TFTextTask textTask;
+    //private TFTextTask textTask;
     private String message;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -114,15 +114,15 @@ public class TensorFlowFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        textTask.cancel(true);
+        //textTask.cancel(true);
         interpreter.close();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        textTask = new TFTextTask();
-        textTask.execute();
+        //textTask = new TFTextTask();
+        //textTask.execute();
     }
 
     private void startCamera() {
@@ -283,7 +283,8 @@ public class TensorFlowFragment extends Fragment {
                                     }
                                 }
                                 String msg = String.format(Locale.ENGLISH,"%s: %1.4f", biggerLabel, higher);
-                                message = msg;
+                                //message = msg;
+                                mainActivity.textView.setText(msg);
                             }
                         })
                 .addOnFailureListener(
@@ -344,35 +345,35 @@ public class TensorFlowFragment extends Fragment {
         return bmpGrayScale;
     }
 
-    class TFTextTask extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            while (true) {
-
-                Log.d(TAG, "TF doInBackground: " + message);
-
-                publishProgress(message);
-
-                if(isCancelled()) {
-                    break;
-                }
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            mainActivity.textView.setText(values[0]);
-        }
-    }
+//    class TFTextTask extends AsyncTask<Void, String, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//
+//            while (true) {
+//
+//                Log.d(TAG, "TF doInBackground: " + message);
+//
+//                publishProgress(message);
+//
+//                if(isCancelled()) {
+//                    break;
+//                }
+//
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    Thread.currentThread().interrupt();
+//                }
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(String... values) {
+//            mainActivity.textView.setText(values[0]);
+//        }
+//    }
 }
